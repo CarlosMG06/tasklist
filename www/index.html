@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasklist AMS2</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+</head>
+<body>
+    <h1>Tasklist</h1>
+    <ul>
+        <li>test task</li>
+    </ul>
+    <div id="dialog" style="display:none;">
+        Tasca:
+        <input type="text"/>
+    </div>
+    <button onClick="afegeix()">Afegeix</button>
+    <script>
+        function afegeix() {
+            $( "#dialog" ).dialog({
+                resizable: false,
+                height: "auto",
+                width: 400,
+                modal: true,
+                buttons: {
+                    "Afegir tasca": function() {
+                        const task = $('input').val();
+                        $('ul').append('<li>' +task+'</li>');
+                        $( this ).dialog("close");
+                    },
+                    Cancel: function() {
+                    $( this ).dialog( "close" );
+                    }
+                }
+             });
+        }
+    </script>
+</body>
+</html>
