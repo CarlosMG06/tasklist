@@ -8,14 +8,11 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
     <style>
-        .task {
+        .tasca {
             margin: 8px;
             padding: 8px;
             border: 2px solid black;
             border-radius: 8px;
-        }
-        .elimina {
-            float: right;
         }
         #dialog {
             display: none;
@@ -25,13 +22,14 @@
 <body>
     <h1>Tasklist</h1>
     <div id="list">
-        <div class="task">
-            test task
-            <button class="elimina" onClick="elimina()">&times;</button>
+        <div class="tasca">
+            <span class="nom">test task</span>
+            <button class="edita" onclick="edita()">Edita</button>
+            <button class="elimina" onclick="elimina()">&times;</button>
         </div>
     </div>
     <div id="dialog">
-        Tasca:
+        Nom de la tasca:
         <input type="text"/>
     </div>
     <button onClick="afegeix()">Afegeix</button>
@@ -45,15 +43,23 @@
                 buttons: {
                     "Afegir tasca": function() {
                         const taskname = $('input').val();
-                        const elem = $('<div>'+taskname+'<button>&times;</button>'+'</div>')
-                        $("button", elem).click(elimina);
-                        $("button", elem).addClass("elimina");
-                        $(elem).addClass("task");
+                        
+                        const elem = $(
+                            '<div class="tasca">' + 
+                                '<span class="nom">'+taskname+'</span>' +
+                                '<button class="edita">Edita</button>' +
+                                '<button class="elimina">&times;</button>' +
+                            '</div>');
+                        $(".edita", elem).click(edita);
+                        $(".elimina", elem).click(elimina);
                         $('#list').append(elem);
+                        
+                        $('input').val("");
                         $(this).dialog("close");
                     },
                     Cancel: function() {
-                    $(this).dialog( "close" );
+                    $('input').val("");
+                    $(this).dialog("close");
                     }
                 }
              });
@@ -61,6 +67,29 @@
         function elimina(event) {
             var caller = event.target || event.srcElement;
             $(caller).parent().remove();
+        }
+        function edita(event) {
+            var caller = event.target || event.srcElement;
+            $("#dialog").dialog({
+                resizable: false,
+                height: "auto",
+                width: 400,
+                modal: true,
+                buttons: {
+                    "Editar tasca": function() {
+                        const taskname = $('input').val();
+                        
+                        $(caller).parent().find('.nom').text(taskname);
+
+                        $('input').val("");
+                        $(this).dialog("close");
+                    },
+                    Cancel: function() {
+                    $('input').val("");
+                    $(this).dialog("close");
+                    }
+                }
+            });
         }
     </script>
 </body>
