@@ -7,35 +7,60 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+    <style>
+        .task {
+            margin: 8px;
+            padding: 8px;
+            border: 2px solid black;
+            border-radius: 8px;
+        }
+        .elimina {
+            float: right;
+        }
+        #dialog {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <h1>Tasklist</h1>
-    <ul>
-        <li>test task</li>
-    </ul>
-    <div id="dialog" style="display:none;">
+    <div id="list">
+        <div class="task">
+            test task
+            <button class="elimina" onClick="elimina()">&times;</button>
+        </div>
+    </div>
+    <div id="dialog">
         Tasca:
         <input type="text"/>
     </div>
     <button onClick="afegeix()">Afegeix</button>
     <script>
         function afegeix() {
-            $( "#dialog" ).dialog({
+            $("#dialog").dialog({
                 resizable: false,
                 height: "auto",
                 width: 400,
                 modal: true,
                 buttons: {
                     "Afegir tasca": function() {
-                        const task = $('input').val();
-                        $('ul').append('<li>' +task+'</li>');
-                        $( this ).dialog("close");
+                        const taskname = $('input').val();
+                        const elem = $('<div>'+taskname+'<button>&times;</button>'+'</div>')
+                        $("button", elem).click(elimina);
+                        $("button", elem).addClass("elimina");
+                        $(elem).addClass("task");
+                        $('#list').append(elem);
+                        $(this).dialog("close");
                     },
                     Cancel: function() {
-                    $( this ).dialog( "close" );
+                    $(this).dialog( "close" );
                     }
                 }
              });
+        }
+        function elimina(event) {
+            var caller = event.target || event.srcElement;
+            $(caller).parent().remove();
         }
     </script>
 </body>
