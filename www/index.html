@@ -70,8 +70,9 @@
     <button class="afegeix" onClick="afegeixDialog()">Afegeix</button>
     <script>
         window.onload = function() {
-            if (localStorage.getItem('tasques')) {
-                const taskArray = JSON.parse(localStorage.getItem('tasques'));
+            const localTasks = localStorage.getItem('tasques');
+            if (localTasks !== null) {
+                const taskArray = JSON.parse(localTasks);
                 if (taskArray.length > 0) {
                     // Amaga el missatge de cap tasca
                     $('#capTasca').hide();
