@@ -48,7 +48,7 @@
         #dialog{
             display: none;
         }
-        #cap_tasca {
+        #capTasca {
             font-style: italic;
             color: gray;
         }
@@ -58,7 +58,7 @@
     <h1>Tasklist</h1>
     
     <!-- Missatge quan no hi ha tasques -->
-    <span id="cap_tasca">(Cap tasca a la llista.)</span>
+    <span id="capTasca">(Cap tasca a la llista.)</span>
     
     <div id="list">
     </div>
@@ -67,9 +67,35 @@
         Nom de la tasca:
         <input type="text"/>
     </div>
-    <button class="afegeix" onClick="afegeix()">Afegeix</button>
+    <button class="afegeix" onClick="afegeixDialog()">Afegeix</button>
     <script>
-        function afegeix() {
+        window.onload = function() {
+            if (localStorage.getItem('tasques')) {
+                const taskArray = JSON.parse(localStorage.getItem('tasques'));
+                if (taskArray.length > 0) {
+                    // Amaga el missatge de cap tasca
+                    $('#capTasca').hide();
+                }
+                for (let i = 0; i < taskArray.length; i++) {
+                    afegeix(taskArray[i]);
+                }
+            } else {
+                localStorage.setItem('tasques', JSON.stringify([]));
+            }
+        }
+
+        function afegeix(taskname) {
+            const elem = $(
+                '<div class="tasca">' + 
+                    '<span class="nom">'+taskname+'</span>' +
+                    '<button class="edita">Edita</button>' +
+                    '<button class="elimina">&times;</button>' +
+                '</div>');
+            $(".edita", elem).click(edita);
+            $(".elimina", elem).click(elimina);
+            $('#list').append(elem);
+        }
+        function afegeixDialog() {
             $("#dialog").dialog({
                 resizable: false,
                 height: "auto",
@@ -78,24 +104,20 @@
                 buttons: {
                     "Afegir tasca": function() {
                         const taskname = $('input').val();
-                        
-                        const elem = $(
-                            '<div class="tasca">' + 
-                                '<span class="nom">'+taskname+'</span>' +
-                                '<button class="edita">Edita</button>' +
-                                '<button class="elimina">&times;</button>' +
-                            '</div>');
-                        $(".edita", elem).click(edita);
-                        $(".elimina", elem).click(elimina);
-                        $('#list').append(elem);
-                        
-                        $('input').val("");
-                        $(this).dialog("close");
 
+                        const taskArray = JSON.parse(localStorage.getItem('tasques'));
+                        taskArray.push(taskname);
+                        localStorage.setItem('tasques', JSON.stringify(taskArray));
+                        
+                        afegeix(taskname);
+                        
                         // Amaga el missatge de cap tasca
-                        if ($('#cap_tasca').is(':visible')) {
-                            $('#cap_tasca').hide();
+                        if ($('#capTasca').is(':visible')) {
+                            $('#capTasca').hide();
                         }
+
+                        $('input').val("");
+                        $(this).dialog("close");                        
                     },
                     Cancel: function() {
                     $('input').val("");
@@ -107,10 +129,16 @@
         function elimina(event) {
             var caller = event.target || event.srcElement;
             $(caller).parent().remove();
+
+            const taskname = $(caller).parent().find('.nom').text();
+            const taskArray = JSON.parse(localStorage.getItem('tasques'));
+            const index = taskArray.indexOf(taskname);
+            taskArray.splice(index, 1);
+            localStorage.setItem('tasques', JSON.stringify(taskArray));
             
             // Mostra el missatge de cap tasca si la llista està buida
             if ($('#list').children().length === 0) {
-                $('#cap_tasca').show();
+                $('#capTasca').show();
             }
         }
         function edita(event) {
@@ -123,6 +151,12 @@
                 buttons: {
                     "Editar tasca": function() {
                         const taskname = $('input').val();
+
+                        const oldTaskName = $(caller).parent().find('.nom').text();
+                        const taskArray = JSON.parse(localStorage.getItem('tasques'));
+                        const index = taskArray.indexOf(oldTaskName);
+                        taskArray[index] = taskname;
+                        localStorage.setItem('tasques', JSON.stringify(taskArray));
                         
                         $(caller).parent().find('.nom').text(taskname);
 
